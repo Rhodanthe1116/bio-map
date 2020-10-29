@@ -103,8 +103,9 @@ function Main() {
     const [error, setError] = useState(false)
     useEffect(() => {
         setTrees([])
-
-        fetch('http://localhost:3000/trees')
+        const root = process.env.REACT_APP_DATA_PROVIDER_URL;
+        const action = '/trees'
+        fetch(`${root}${action}`)
             .then(response => {
                 if (response.ok) {
                     return response.json()
