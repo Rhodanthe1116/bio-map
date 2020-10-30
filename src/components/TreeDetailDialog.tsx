@@ -178,21 +178,29 @@ function Intro(props: IntroProps) {
     const species = tree?.species;
     return (
         <div>
-            <Image
+            {/* <Image
                 alt={tree?.name}
                 disableSpinner
                 src={'../img/tree.png'}
+            /> */}
+            <Image
+                aspectRatio={(4 / 3)}
+                alt={tree?.name}
+                disableSpinner
+                src={`https://source.unsplash.com/345x200/?tree?${species?.scientificName}`}
             />
-            <Typography gutterBottom>
-                {tree?.code}
+            <br/>
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+                {species?.name}
             </Typography>
             <ul>
-                <li>樹高{tree?.height}</li>
-                <li>胸高直徑{tree?.dbh?.avg}</li>
-                <li>樹冠幅{tree?.crownWidth}</li>
+                <li>編號：{tree?.code}</li>
+                <li>樹高：{tree?.height}</li>
+                <li>胸高直徑：{tree?.dbh?.avg}</li>
+                <li>樹冠幅：{tree?.crownWidth}</li>
             </ul>
             <Typography gutterBottom>
-                {species?.form?.description}
+                {species?.form?.description || '暫無資訊'}
             </Typography>
         </div>
     )
@@ -208,16 +216,18 @@ function Phenology(props: PhenologyProps) {
     return (
         <div>
             <Image
+                aspectRatio={(4 / 3)}
                 alt={tree?.name}
                 disableSpinner
-                src={'../img/tree.png'}
+                src={`https://source.unsplash.com/345x200/?tree?${species?.scientificName}Phenology`}
             />
-            <Typography variant="body1" gutterBottom>
+            <br />
+            <Typography variant="body2" color="textSecondary" gutterBottom>
                 {species?.name} {'>'} 物候
             </Typography>
             <ul>
-                <li>花期：{species?.flower?.startMonth} ~ {species?.flower?.endMonth}</li>
-                <li>果期：{species?.fruit?.startMonth} ~ {species?.fruit?.endMonth}</li>
+                <li>花期：{species?.flower?.startMonth} ~ {species?.flower?.endMonth} 月</li>
+                <li>果期：{species?.fruit?.startMonth} ~ {species?.fruit?.endMonth} 月</li>
             </ul>
         </div>
     )
@@ -233,15 +243,17 @@ function Usage(props: UsageProps) {
     return (
         <div>
             <Image
+                aspectRatio={(4 / 3)}
                 alt={tree?.name}
                 disableSpinner
-                src={'../img/tree.png'}
+                src={`https://source.unsplash.com/345x200/?tree?${species?.scientificName}Usage`}
             />
-            <Typography variant="body1" gutterBottom>
+            <br />
+            <Typography variant="body2" color="textSecondary" gutterBottom>
                 {species?.name} {'>'} 用途
             </Typography>
             <Typography gutterBottom>
-                {species?.usage}
+                {species?.usage || '暫無資訊'}
             </Typography>
         </div>
     )
@@ -256,15 +268,17 @@ function Others(props: OthersProps) {
     return (
         <div>
             <Image
+                aspectRatio={(4 / 3)}
                 alt={tree?.name}
                 disableSpinner
-                src={'../img/tree.png'}
+                src={`https://source.unsplash.com/345x200/?tree?${species?.scientificName}Others`}
             />
-            <Typography variant="body1" gutterBottom>
+            <br />
+            <Typography variant="body2" color="textSecondary" gutterBottom>
                 {species?.name} {'>'} 其他
             </Typography>
             <Typography gutterBottom>
-                {species?.usage}
+                {species?.others || '暫無資訊'}
             </Typography>
         </div>
     )

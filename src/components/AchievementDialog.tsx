@@ -1,91 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+    BrowserRouter as Router,
+    Route,
+    Switch,
+    useHistory,
+} from "react-router-dom"
 import Image from 'material-ui-image'
 
 import { createStyles, Theme, withStyles, WithStyles, makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogContent from '@material-ui/core/DialogContent';
+
 import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import ButtonBase, { ButtonBaseProps } from '@material-ui/core/ButtonBase';
 
 // model
+import Achievement from '../models/Achievement';
 
 // my components
+import PageDialog from './PageDialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         flexGrow: 1,
     },
     paper: {
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
         textAlign: 'center',
         color: theme.palette.text.secondary,
-        height: '100%',
+        width: '100%',
+        height: '72px',
     },
 }));
-
-const styles = (theme: Theme) =>
-    createStyles({
-        root: {
-            margin: 0,
-            padding: theme.spacing(2),
-        },
-        closeButton: {
-            color: theme.palette.primary.contrastText,
-        },
-        appBar: {
-            position: 'relative',
-
-        },
-        title: {
-            flex: '0 0 auto',
-            marginRight: theme.spacing(1),
-        },
-        subtitle: {
-            flex: '1 1 auto',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            fontStyle: 'italic',
-        }
-    });
-
-export interface DialogTitleProps extends WithStyles<typeof styles> {
-    id: string;
-    children: React.ReactNode;
-    onClose: () => void;
-    primary: string;
-    secondary: string;
-}
-
-const DialogTitle = withStyles(styles)((props: DialogTitleProps) => {
-    const { children, classes, onClose, primary, secondary } = props;
-    return (
-        <AppBar className={classes.appBar}>
-            <Toolbar>
-                {children}
-                <Typography className={classes.title} variant="h6">{primary}</Typography>
-                <Typography className={classes.subtitle} variant="body2">{secondary}</Typography>
-                {onClose ? (
-                    <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-                        <CloseIcon />
-                    </IconButton>
-                ) : null}
-            </Toolbar>
-        </AppBar>
-    );
-});
-
-const DialogContent = withStyles((theme: Theme) => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}))(MuiDialogContent);
 
 const DialogActions = withStyles((theme: Theme) => ({
     root: {
@@ -100,63 +47,133 @@ export interface AchievementDialogProps {
 }
 export default function AchievementDialog(props: AchievementDialogProps) {
     const classes = useStyles();
+    let history = useHistory();
 
     const { open, onClose } = props;
 
     const [type, setType] = useState('intro');
+    const [achievements, setAchievements] = useState([]);
+    const [error, setError] = useState(false);
+    const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
+    useEffect(() => {
+        setAchievements([])
+        const root = process.env.REACT_APP_DATA_PROVIDER_URL;
+        const action = '/achievements'
+        fetch(`${root}${action}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('get achievements failed')
+                }
+                return response.json()
+            })
+            .then((jsonResponse) => {
 
-    const handleClose = () => {
+                setAchievements(jsonResponse)
+            })
+            .catch(error => {
+                setError(error.toString())
+            })
+    }, [])
+
+    function handleClose() {
         setType('intro');
         onClose();
     };
 
+    function handleItemClick(achievement: Achievement) {
+        history.push(`/achievement/${achievement.name}`)
+        setSelectedAchievement(achievement);
+    }
     if (!open) {
         return <></>
     }
     return (
         <div>
-            <Dialog
-                fullWidth={true}
-                maxWidth={'md'}
+            <PageDialog open={open}
+                primary="成就"
+                secondary="Achievement"
                 onClose={handleClose}
-                aria-labelledby="customized-dialog-title"
-                open={open}
-            >
-                <DialogTitle id="customized-dialog-title" onClose={handleClose}
-                    primary={'成就'}
-                    secondary={'Achievement'}
-                >
- 
-                </DialogTitle>
-                <DialogContent dividers>
-                    <div className={classes.root}>
-                        <Grid container spacing={3} alignContent="stretch" alignItems="stretch">
-                            <Grid item xs={4}>
-                                <Paper className={classes.paper}>植物用途達人</Paper>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Paper className={classes.paper}>薔薇科達人</Paper>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Paper className={classes.paper}>芸香科達人</Paper>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Paper className={classes.paper}>禾本科達人</Paper>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Paper className={classes.paper}>菊科達人</Paper>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Paper className={classes.paper}>型態藏寶地圖</Paper>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Paper className={classes.paper}>xs=3</Paper>
-                            </Grid>
-                        </Grid>
-                    </div>
-                </DialogContent>
-               
-            </Dialog>
+                dialogActions={<></>}
+            > 
+                {selectedAchievement &&
+                    selectedAchievement.name.concat(JSON.stringify(selectedAchievement.questions))
+                }
+                {selectedAchievement === null &&
+                    <AchievementList achievements={achievements} onItemClick={handleItemClick} />
+                }
+            </PageDialog>
         </div>
     );
+}
+
+export interface AchievementListProps {
+    achievements: Achievement[];
+    onItemClick: ((achievement: Achievement) => void) | undefined;
+}
+
+const AchievementList: React.FC<AchievementListProps> = ({ achievements, onItemClick, children }) => {
+    const classes = useStyles();
+    function handleItemClick(achievement: Achievement) {
+        if (onItemClick) {
+            onItemClick(achievement)
+        }
+    }
+
+    return (
+        <div className={classes.root}>
+            <Grid container spacing={3} alignContent="stretch" alignItems="stretch">
+                {achievements.map((achievement: Achievement) => (
+                    <Grid item xs={4}>
+                        <ButtonPaper onClick={() => handleItemClick(achievement)}>
+                            🎈
+                            {achievement.name}
+                        </ButtonPaper>
+                    </Grid>
+                ))
+
+                }
+
+                <Grid item xs={4}>
+                    <ButtonPaper >
+                        🎈薔薇科達人
+                    </ButtonPaper>
+                </Grid>
+                <Grid item xs={4}>
+                    <ButtonPaper>
+                        🎈芸香科達人
+                    </ButtonPaper>
+                </Grid>
+                <Grid item xs={4}>
+                    <ButtonPaper>
+                        禾本科達人
+                    </ButtonPaper>
+                </Grid>
+                <Grid item xs={4}>
+                    <ButtonPaper>
+                        菊科達人
+                    </ButtonPaper>
+                </Grid>
+                <Grid item xs={4}>
+                    <ButtonPaper>
+                        型態藏寶地圖
+                    </ButtonPaper>
+                </Grid>
+            </Grid>
+        </div>
+    )
+}
+
+export interface ButtonPaperProps {
+
+}
+const ButtonPaper: React.FC<ButtonBaseProps> = ({ onClick, children }) => {
+    const classes = useStyles();
+
+    return (
+        <ButtonBase style={{ width: '100%', }} onClick={onClick}>
+            <Paper className={classes.paper}>
+                {children}
+            </Paper>
+        </ButtonBase>
+    )
 }

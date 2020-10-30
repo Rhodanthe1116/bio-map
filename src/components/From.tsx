@@ -60,6 +60,14 @@ export interface FormProps {
     tree: Tree | null;
 }
 
+const labels = [
+    "form",
+    "stem",
+    "leaf",
+    "flower",
+    "fruit"
+]
+
 export default function Form(props: FormProps) {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
@@ -72,11 +80,13 @@ export default function Form(props: FormProps) {
     return (
         <div className={classes.root}>
             <Image
+                aspectRatio={(4 / 3)}
                 alt={tree?.name}
                 disableSpinner
-                src={'../img/tree.png'}
+                src={`https://source.unsplash.com/345x200/?tree?${species?.scientificName}+${labels[value]}`}
             />
-            <Typography variant="body1" gutterBottom>
+            <br />
+            <Typography variant="body2" color="textSecondary" gutterBottom>
                 {species?.name} {'>'} 型態
             </Typography>
             <Tabs
@@ -93,32 +103,32 @@ export default function Form(props: FormProps) {
                 <Tab label="葉" {...a11yProps(2)} />
                 <Tab label="花" {...a11yProps(3)} />
                 <Tab label="果實" {...a11yProps(4)} />
-            </Tabs> 
+            </Tabs>
             <TabPanel value={value} index={0}>
                 <Typography gutterBottom>
-                    {species?.form?.description}
+                    {species?.form?.description || '暫無資訊'}
                 </Typography>
             </TabPanel>
             <TabPanel value={value} index={1}>
                 <Typography gutterBottom>
-                    {species?.stem?.description}
+                    {species?.stem?.description || '暫無資訊'}
                 </Typography>
             </TabPanel>
             <TabPanel value={value} index={2}>
                 <Typography gutterBottom>
-                    {species?.leaf?.description}
+                    {species?.leaf?.description || '暫無資訊'}
                     {species?.leaf?.note}
                 </Typography>
             </TabPanel>
             <TabPanel value={value} index={3}>
                 <Typography gutterBottom>
-                    {species?.flower?.description}
+                    {species?.flower?.description || '暫無資訊'}
                     {species?.flower?.note}
                 </Typography>
             </TabPanel>
             <TabPanel value={value} index={4}>
                 <Typography gutterBottom>
-                    {species?.fruit?.description}
+                    {species?.fruit?.description || '暫無資訊'}
                     {species?.fruit?.note}
                 </Typography>
             </TabPanel>

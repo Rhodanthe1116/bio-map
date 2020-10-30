@@ -58,7 +58,7 @@ export default function SpeedDials({ icon, type, actions, onActionClick }) {
                     variant: true ? "extended" : "round",
                     children: "asdsadasd",
                     color: 'secondary',
-                    onClick: (e) => handleClick(e, actions[0].value),
+                    // onClick: (e) => handleClick(e, actions[0].value),
 
                 }}
             >
@@ -66,8 +66,10 @@ export default function SpeedDials({ icon, type, actions, onActionClick }) {
                     <SpeedDialAction
                         key={action.name}
                         icon={action.icon}
+                        TooltipClasses={classes.tooltip}
                         tooltipTitle={action.name}
                         onClick={(e) => handleClick(e, action.value)}
+                        tooltipPlacement="bottom"
                     />
                 ))}
             </SpeedDial>
