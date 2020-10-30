@@ -48,7 +48,7 @@ function TreeMap({ trees, onTreeClick }) {
                 handleLocationError(false);
             }
             function handleLocationError(browserHasGeolocation) {
-                alert(browserHasGeolocation ?
+                console.log(browserHasGeolocation ?
                     'Error: The Geolocation service failed.' :
                     'Error: Your browser doesn\'t support geolocation.');
             }
