@@ -13,9 +13,8 @@ export interface Tree {
     socialMeaning: string;
     stress: string;
     note: string;
-
-    lat: number;
-    lng: number;
+    latitude: number;
+    longitude: number;
 }
 interface DBH {
     avg: number;

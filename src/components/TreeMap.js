@@ -76,8 +76,8 @@ function TreeMap({ trees, onTreeClick }) {
                 {trees && trees.map(tree =>
                     (<TreeMarker
                         key={tree.id}
-                        lat={tree.lat}
-                        lng={tree.lng}
+                        lat={tree.latitude}
+                        lng={tree.longitude}
                         show={true}
                         tree={tree}
                         onDonateClick={donateTree}

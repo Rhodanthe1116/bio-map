@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types';
 
 import TreeIcon from './TreeIcon';
+import FlowerIcon from './FlowerIcon';
 
 const useStyles = makeStyles({
 
@@ -21,7 +22,10 @@ function TreeMarker({ show, tree, onDonateClick, onTreeClick }) {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [open, setOpen] = useState(false);
+    const [error, setError] = useState(false);
 
+    const thisMonth = new Date().getMonth()
+    const flower = tree?.species?.flower?.startMonth <= thisMonth && thisMonth <= tree?.species?.flower?.endMonth
     const handleClick = (event) => {
         onTreeClick(tree)
     };
@@ -30,13 +34,37 @@ function TreeMarker({ show, tree, onDonateClick, onTreeClick }) {
         return <></>
     }
 
+    if (error) {
+        return (
+            <div>
+                { flower ?
+                    <FlowerIcon
+                        className={classes.marker}
+                        onClick={handleClick}
+                    />
+                    :
+                    <TreeIcon
+                        className={classes.marker}
+                        onClick={handleClick}
+                    />
+                }
+            </div>
+        )
+    }
+
     return (
         <div>
-            <TreeIcon
-                className={classes.marker}
-                color={open ? "secondary" : "primary"}
-                onClick={handleClick}
-            />
+            { flower ?
+                <img src={`/icons/${tree?.species?.scientificName}.png`}
+                    onClick={handleClick}
+                    onError={() => setError(true)}
+                />
+                :
+                <img src={`/icons/${tree?.species?.scientificName}-2.png`}
+                    onClick={handleClick}
+                    onError={() => setError(true)}
+                />
+            }
         </div>
     );
 };

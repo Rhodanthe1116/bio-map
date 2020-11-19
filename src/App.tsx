@@ -32,6 +32,8 @@ import AchievementDialog from './components/AchievementDialog';
 // model
 import { Tree } from './models/Tree'
 
+const _ = require('lodash');
+
 const useStyles = makeStyles((theme) => ({
 
     main: {
@@ -122,11 +124,13 @@ function Main() {
                         return false
                     })
                 }
+
+                newTrees = _.shuffle(newTrees)
                 newTrees = newTrees.slice(0, 50)
 
                 newTrees.forEach((tree: Tree) => {
-                    tree.lat = ntuLocation.center.lat + (Math.random() - 0.5) * 0.01
-                    tree.lng = ntuLocation.center.lng + (Math.random() - 0.5) * 0.01
+                    tree.latitude = ntuLocation.center.lat + (Math.random() - 0.5) * 0.01
+                    tree.longitude = ntuLocation.center.lng + (Math.random() - 0.5) * 0.01
                 });
                 setTrees(newTrees)
             })
@@ -138,11 +142,11 @@ function Main() {
     function openTreeDetail(tree: Tree) {
         history.push(`/trees/${tree.code}`)
         setSelectedTree(tree)
-    } 
+    }
     function closeTreeDetail(tree: Tree) {
         history.push(`/`)
         setSelectedTree(null)
-    } 
+    }
     return (
         <Box className={classes.map}>
             <FloatingNavgationBar
