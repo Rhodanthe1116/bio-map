@@ -37,12 +37,20 @@ const useStyles = makeStyles(theme => ({
     right: 0,
     margin: '0 auto',
   },
+  bottomNavigation: {
+    backgroundColor: theme.palette.primary.main
+  },
+  bottomNavigationAction: {
+    '&.Mui-selected': {
+      color: theme.palette.secondary.main,
+    },
+  }
 }));
 
-export default function LabelBottomNavigation({  }) {
+export default function LabelBottomNavigation({ }) {
   const classes = useStyles();
   const location = useLocation();
-  const value = location.pathname ;
+  const value = location.pathname;
   // const [value, setValue] = React.useState(window.location.pathname);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
@@ -51,15 +59,12 @@ export default function LabelBottomNavigation({  }) {
 
   return (
     <AppBar position="fixed" color="primary" className={classes.appBar}>
-      {/* <Fab component={NavLink} to="/own" color="secondary" aria-label="add" className={classes.fabButton}>
-                <CenterFocusWeakIcon />
-            </Fab> */}
-      <BottomNavigation value={value} onChange={handleChange}>
-        <BottomNavigationAction color="secondary" component={NavLink} to="/maps" label="地圖" value="/maps" icon={<EqualizerIcon />} />
-        <BottomNavigationAction color="secondary" component={NavLink} to="/stories" label="地圖故事" value="/stories" icon={<FavoriteIcon />} />
-        <BottomNavigationAction color="secondary" component={NavLink} to="/camera" label="拍照" value="/camera" icon={<CenterFocusWeakIcon />} />
-        <BottomNavigationAction color="secondary" component={NavLink} to="/achievement" label="成就" value="/achievement" icon={<EmojiEventsIcon />} />
-        <BottomNavigationAction color="secondary" component={NavLink} to="/share" label="分享" value="/share" icon={<Avatar
+      <BottomNavigation className={classes.bottomNavigation} value={value} onChange={handleChange}>
+        <BottomNavigationAction className={classes.bottomNavigationAction} component={NavLink} to="/maps" label="地圖" value="/maps" icon={<EqualizerIcon />} />
+        <BottomNavigationAction className={classes.bottomNavigationAction} component={NavLink} to="/stories" label="地圖故事" value="/stories" icon={<FavoriteIcon />} />
+        <BottomNavigationAction className={classes.bottomNavigationAction} component={NavLink} to="/camera" label="拍照" value="/camera" icon={<CenterFocusWeakIcon />} />
+        <BottomNavigationAction className={classes.bottomNavigationAction} component={NavLink} to="/achievement" label="成就" value="/achievement" icon={<EmojiEventsIcon />} />
+        <BottomNavigationAction className={classes.bottomNavigationAction} component={NavLink} to="/share" label="分享" value="/share" icon={<Avatar
           alt="Your head"
           // src={profile && profile.pictureUrl}
           className={classes.smallAvatar}

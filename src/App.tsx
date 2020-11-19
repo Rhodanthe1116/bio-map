@@ -1,10 +1,13 @@
 import React, { useState, useEffect, Suspense } from 'react';
+
+// utils
 import {
     BrowserRouter as Router,
     Route,
     Switch,
     useHistory,
 } from "react-router-dom"
+import { twd97ToLatLng } from './utils/utils'
 
 // theme
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -28,6 +31,7 @@ import FloatingNavgationBar from './components/FloatingNavgationBar'
 import LabelBottomNavigation from './components/LabelBottomNavigation';
 import TreeDetailDialog from './components/TreeDetailDialog';
 import AchievementDialog from './components/AchievementDialog';
+import dataProvider from './dataProvider.js'
 
 // model
 import { Tree } from './models/Tree'
@@ -100,24 +104,17 @@ function Main() {
     let history = useHistory();
     const [selectedTree, setSelectedTree] = useState<Tree | null>(null)
 
-    const [trees, setTrees] = useState([])
+    const [trees, setTrees] = useState<Tree[]>([])
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+
     const [filter, setFilter] = useState({ type: "all", value: "on" })
-    const [error, setError] = useState(false)
     useEffect(() => {
         setTrees([])
-        const root = process.env.REACT_APP_DATA_PROVIDER_URL;
-        const action = '/trees'
-        fetch(`${root}${action}`)
-            .then(response => {
-                if (response.ok) {
-                    return response.json()
-                } else {
-                    throw new Error('get trees failed')
-                }
-            })
-            .then((jsonResponse) => {
-                let newTrees = jsonResponse
+        setLoading(true)
 
+        dataProvider.getTrees()
+            .then((newTrees: Tree[]) => {
                 if (filter.type !== 'all' && filter.type !== 'area') {
                     newTrees = newTrees.filter((tree: Tree) => {
                         return true
@@ -129,14 +126,20 @@ function Main() {
                 newTrees = newTrees.slice(0, 50)
 
                 newTrees.forEach((tree: Tree) => {
-                    tree.latitude = ntuLocation.center.lat + (Math.random() - 0.5) * 0.01
-                    tree.longitude = ntuLocation.center.lng + (Math.random() - 0.5) * 0.01
+                    tree.latitude = ntuLocation.center.lat + (Math.random() - 0.5) * 0.003 - 0.0015
+                    tree.longitude = ntuLocation.center.lng + (Math.random() - 0.5) * 0.003 - 0.0045
+                    // const { lat, lng } = twd97ToLatLng(2767643.21, 303861.3074)
+                    // tree.latitude = lat
+                    // tree.longitude = lng
                 });
                 setTrees(newTrees)
             })
             .catch(error => {
-                setError(error.toString())
+                console.error(error)
+                setError(`Error getting trees QQ ${error}`)
             })
+
+        setLoading(false)
     }, [filter])
 
     function openTreeDetail(tree: Tree) {
@@ -176,11 +179,11 @@ function Main() {
             </Suspense>
 
 
-            <Backdrop className={classes.backdrop} open={trees.length === 0}>
+            <Backdrop className={classes.backdrop} open={loading}>
                 <CircularProgress color="primary" />
             </Backdrop>
-            <Snackbar open={error} autoHideDuration={4000} onClose={() => setError(false)}>
-                <Alert onClose={() => setError(false)} severity="error">
+            <Snackbar open={error ? true : false} autoHideDuration={4000} onClose={() => setError(null)}>
+                <Alert onClose={() => setError(null)} severity="error">
                     {error}
                 </Alert>
             </Snackbar>

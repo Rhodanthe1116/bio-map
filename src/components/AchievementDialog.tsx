@@ -32,6 +32,9 @@ import Question from '../models/Question';
 import PageDialog from './PageDialog';
 import { Typography } from '@material-ui/core';
 
+// data provider
+import dataProvider from '../dataProvider'
+
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         flexGrow: 1,
@@ -75,28 +78,26 @@ export default function AchievementDialog(props: AchievementDialogProps) {
     const { open, onClose } = props;
 
     const [type, setType] = useState('intro');
+
     const [achievements, setAchievements] = useState([]);
-    const [error, setError] = useState(false);
-    const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     useEffect(() => {
         setAchievements([])
-        const root = process.env.REACT_APP_DATA_PROVIDER_URL;
-        const action = '/achievements'
-        fetch(`${root}${action}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('get achievements failed')
-                }
-                return response.json()
-            })
-            .then((jsonResponse) => {
+        setLoading(true)
 
-                setAchievements(jsonResponse)
+        dataProvider.getAchievements()
+            .then(achievements => {
+                setAchievements(achievements)
             })
             .catch(error => {
-                setError(error.toString())
+                console.error(error)
+                setError(`Error getting achievements QQ ${error}`)
             })
+        setLoading(false)
     }, [])
+
+    const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
 
     function handleClose() {
         setType('intro');
@@ -243,6 +244,12 @@ const AchievementDetail: React.FC<AchievementDetailProps> = ({ achievement }) =>
 }
 
 
+
+
+
+
+
+
 export interface QuizProps {
     questions: Question[];
 }
@@ -302,6 +309,27 @@ const Quiz: React.FC<QuizProps> = ({ questions }) => {
         }
         return score
     }
+    async function share() {
+
+        const shareData = {
+            title: '生多地圖成就測驗',
+            text: `我高分通過了XXX測驗，並獲得了${score}分！快來生多地圖跟我一起探索生物世界吧！`,
+            url: 'https://bio-map.netlify.app/',
+        }
+        let myNavigator: any
+        myNavigator = window.navigator
+        if (myNavigator && myNavigator.share) {
+            try {
+                const res = await myNavigator.share(shareData)
+            } catch (error) {
+                console.error(error)
+                alert(error.toString())
+            }
+        } else {
+            console.log('navigator does not exist')
+            alert('navigator does not exist')
+        }
+    }
     function handleCancel() {
         return
     }
@@ -335,7 +363,13 @@ const Quiz: React.FC<QuizProps> = ({ questions }) => {
 
 
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', textAlign: 'center', paddingBottom: '16px' }}>
-                    <Button color="secondary" variant="contained">分享</Button>
+                    <Button
+                        color="secondary"
+                        variant="contained"
+                        onClick={share}
+                    >
+                        分享
+                    </Button>
                 </div>
             </div>
         )
